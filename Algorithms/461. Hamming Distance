@@ -1,0 +1,32 @@
+class Solution:
+    def hammingDistance(self, x, y):
+        """
+        :type x: int
+        :type y: int
+        :rtype: int
+        """
+        dis = 0
+        for bit in range(32):
+            key_bit = 1 << bit
+            if (x & key_bit) != (y & key_bit):
+                dis += 1
+        return dis
+
+
+def main():
+    test = [
+        # (3, 1, 1),
+        # (2, 1, 1),
+        (93, 73, 2),
+    ]
+    s = Solution()
+    for test_data in test:
+        result = s.hammingDistance(*test_data[:-1])
+        if result != test_data[-1]:
+            print("ERROR: %s, %s" % (test_data, result))
+        else:
+            print("\nSuccess !")
+
+
+if __name__ == "__main__":
+    main()
