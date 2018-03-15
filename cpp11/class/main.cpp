@@ -42,9 +42,15 @@ void malloc_test(){
     cout << "typeof cpp_d22: " << typeid(cpp_d22).name() << endl;
 }
 
+
+void malloc_test_c99(){
+    int **d2;
+    d2 = (int **)malloc(sizeof(int)*4);
+
+}
 int main() {
     // right_value_ref_arg(5);
     // count_numbers(1, "123");
-    malloc_test();
+    // malloc_test_c99();
     return 0;
 }
