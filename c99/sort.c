@@ -1,4 +1,4 @@
-#include <stdio.h>
+
 void print_array(int *a, int start_index, int end_index){
     for(int i = start_index; i <= end_index; i++){
         printf("%d, ", a[i]);
@@ -8,7 +8,7 @@ void print_array(int *a, int start_index, int end_index){
 
 void quick_sort(int *a, int start_index, int end_index){
 
-    if (end_index <= start_index || start_index < 0) {
+    if (end_index <= start_index || start_index < 0 || end_index < 0) {
         return;
     }
 
@@ -42,8 +42,8 @@ void quick_sort(int *a, int start_index, int end_index){
 
 void merge(int *a, int *temp_ptr, int start_index, int mid_index, int end_index){
     int arr_index = start_index;
-    int temp_index = start_index;
     int arr2_index = mid_index + 1;
+    int temp_index = start_index;
 
     while(arr_index < mid_index + 1 && temp_index < end_index + 1){
         if (a[arr_index] <= a[arr2_index]){
