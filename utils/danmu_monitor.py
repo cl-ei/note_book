@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import re
 import os
-import redis
-import pickle
 import time
 from selenium import webdriver
+from redismq import RedisMessageQueue
+from exceptionsproc import IgnoreError
+
 
 BROWSER_DRIVER_PATH = "chromedriver.exe"
 MONITOR_ADDR = "https://live.bilibili.com/612"
@@ -27,52 +28,6 @@ def __make_logger(name, file_path, debug_format=False):
 
 
 prize_logging = __make_logger(name="prize", file_path="prize_raw.log")
-
-
-class RedisMessageQueue(object):
-    def __init__(self, channel=None, **config):
-        self.__conn = redis.Redis(
-            host=config.get("host", "localhost"),
-            port=config.get("port", 6379),
-            db=config.get("db", 8),
-        )
-        self.channel = channel or "async"
-        self._monitor_q = None
-
-    def send_msg(self, msg):
-        b = pickle.dumps(msg)
-        self.__conn.publish(self.channel, b)
-        return True
-
-    def __init_monitor_q(self):
-        pub = self.__conn.pubsub()
-        pub.subscribe(self.channel)
-        pub.listen()
-        pub.parse_response()
-        self._monitor_q = pub
-
-    def accept_msg(self):
-        if self._monitor_q is None:
-            self.__init_monitor_q()
-        while True:
-            r = self._monitor_q.parse_response()
-            try:
-                return pickle.loads(r[-1])
-            except Exception:
-                continue
-
-
-class IgnoreError(object):
-    def __init__(self, print_error=False):
-        self.__print_error = print_error
-
-    def __enter__(self, *args):
-        pass
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if exc_type and self.__print_error:
-            print("An error happend! e: %s" % exc_type)
-        return True
 
 
 class DanmakuMonitor(object):
