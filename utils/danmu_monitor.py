@@ -90,7 +90,7 @@ class DanmakuMonitor(object):
                     with IgnoreError():
                         valid_room_numbers = [
                             _ for _ in re.sub("\D", "-", raw_msg).split("-")
-                            if _ and 9 > len(_) > 2
+                            if _ and 10 > len(_) > 2
                         ]
                         if valid_room_numbers:
                             prize_logging.info("Prize raw msg[%s]" % raw_msg)
