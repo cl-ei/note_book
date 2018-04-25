@@ -95,6 +95,7 @@ class DanmakuMonitor(object):
                         if valid_room_numbers:
                             prize_logging.info("Prize raw msg[%s]" % raw_msg)
                         room_list.extend(valid_room_numbers)
+                        print("Prize raw msg -> ", raw_msg.replace("\r", "\\r").replace("\n", "\\n"))
                 self.prize_redis_queue.send_msg(list(set(room_list)))
 
             if chat_danmaku:
