@@ -3,8 +3,6 @@ import re
 import os
 import time
 import logging
-import redis
-import pickle
 from selenium import webdriver
 from redismq import RedisMessageQueue
 from exceptionsproc import IgnoreError
