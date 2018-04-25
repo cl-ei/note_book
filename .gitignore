@@ -5,6 +5,8 @@
 *.pyc
 *.log
 *.exe
+*.xml
+*.iml
 config/*
 node_modules/*
 .idea/*
