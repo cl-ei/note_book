@@ -8,8 +8,8 @@ MONITOR_ADDR = "https://live.bilibili.com/612"
 
 
 class DanmakuReader(object):
-    def __init__(self, host):
-        self.q = RedisMessageQueue(host=host, channel="chat")
+    def __init__(self):
+        self.q = RedisMessageQueue(channel="chat")
 
     def run(self):
         print("Danmaku reader started.\n--------------------------\n")
@@ -31,4 +31,4 @@ class DanmakuReader(object):
 
 
 if __name__ == "__main__":
-    DanmakuReader("192.168.1.111").run()
+    DanmakuReader().run()

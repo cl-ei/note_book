@@ -104,6 +104,7 @@ class PrizeAccepter(object):
         print("Initialization...")
         options = webdriver.ChromeOptions()
         options.add_argument("--disable-infobars")
+        options.add_argument("--mute-audio")
         self.browser = webdriver.Chrome(executable_path=BROWSER_DRIVER_PATH, port=9515, options=options)
         self.browser.get(LOGIN_URL)
 

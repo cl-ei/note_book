@@ -58,6 +58,7 @@ class DanmakuMonitor(object):
     def run(self):
         options = webdriver.ChromeOptions()
         options.add_argument("--headless")
+        options.add_argument("--mute-audio")
 
         self.browser = webdriver.Chrome(executable_path=BROWSER_DRIVER_PATH, port=9515, options=options)
         self.browser.get(MONITOR_ADDR)

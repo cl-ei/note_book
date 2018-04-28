@@ -1,14 +1,14 @@
 import redis
 import pickle
+import json
+
+with open("redis_config.json") as f:
+    REDIS_CONFIG = json.load(f)
 
 
 class RedisMessageQueue(object):
-    def __init__(self, channel=None, **config):
-        self.__conn = redis.Redis(
-            host=config.get("host", "localhost"),
-            port=config.get("port", 6379),
-            db=config.get("db", 8),
-        )
+    def __init__(self, channel=None):
+        self.__conn = redis.Redis(**REDIS_CONFIG)
         self.channel = channel or "async"
         self._monitor_q = None
 
