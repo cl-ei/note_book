@@ -26,7 +26,6 @@ class DanmakuReader(object):
                     time_str = str(datetime.datetime.now())[:-3]
                     message = "[%s][%s] %s -> %s" % (ul, honor, user, msg,)
                     print("[%s]%s" % (time_str, message))
-                    self.chat_logging.info(message)
                 except Exception as e:
                     print("Lost raw chat message. E: %s" % e)
 
