@@ -121,7 +121,6 @@ class PrizeAccepter(object):
                     r = str(int(r))
                 except Exception as e:
                     error_msg = "Lost prize message. E: %s\n-----\n%s\n-----" % (e, r)
-                    logging.info(error_msg)
-                    print("[%s]%s" % (str(datetime.datetime.now()[:-3]), error_msg))
+                    print("[%s]%s" % (str(datetime.datetime.now())[:-3], error_msg))
                 else:
                     self.accept_prize(r)
