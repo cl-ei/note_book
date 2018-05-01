@@ -55,6 +55,48 @@ class DanmakuMonitor(object):
                 chat_danmaku.append(m.text)
         return chat_danmaku
 
+    def send_chat_danmaku_msg(self, chat_danmaku):
+        if not chat_danmaku:
+            return
+        self.chat_redis_queue.send_msg(chat_danmaku)
+        for raw_message in chat_danmaku:
+            try:
+                spilited_msg = [_ for _ in raw_message.split("\n") if _]
+                if len(spilited_msg) == 2:
+                    spilited_msg = ["", " " * 5] + spilited_msg
+                user, msg = spilited_msg[-1].split(" : ")
+                honor = "%s" % (spilited_msg[0] + spilited_msg[1])
+                ul = "%-5s" % spilited_msg[2]
+                time_str = str(datetime.datetime.now())[:-3]
+                message = "[%s][%s] %s -> %s" % (ul, honor, user, msg,)
+                print("[%s]%s" % (time_str, message))
+                self.chat_logging.info(message)
+            except Exception as e:
+                print("Lost raw chat message. E: %s" % e)
+
+    def send_prize_danmaku_msg(self, prize_danmaku):
+        if not prize_danmaku:
+            return
+
+        room_list = []
+        for raw_msg in prize_danmaku:
+            with IgnoreError():
+                valid_room_numbers = [
+                    _ for _ in re.sub("\D", "-", raw_msg).split("-")
+                    if _ and 10 > len(_) > 2
+                ]
+                if valid_room_numbers:
+                    self.prize_logging.info("Prize raw msg[%s]" % raw_msg)
+                room_list.extend(valid_room_numbers)
+                print("Prize raw msg -> ", raw_msg.replace("\r", "\\r").replace("\n", "\\n"))
+        self.prize_redis_queue.send_msg(list(set(room_list)))
+
+    def send_heart_beat(self):
+        heart_beat_danmaku = ["HEART BEAT!"]
+        self.chat_redis_queue.send_msg(heart_beat_danmaku)
+        self.prize_redis_queue.send_msg(heart_beat_danmaku)
+        print("[%s]Heart beat message sent." % (str(datetime.datetime.now())[:-3]))
+
     def run(self):
         options = webdriver.ChromeOptions()
         options.add_argument("--headless")
@@ -66,46 +108,24 @@ class DanmakuMonitor(object):
 
         print("Message monitor started! ")
         print("Status ready.\n\n--------------------\n")
+
+        idle_time = 0
         while True:
-            # 获取领奖房间号
             prize_danmaku = self.parse_prize_danmaku()
             chat_danmaku = self.parse_chat_danmaku()
 
             if prize_danmaku or chat_danmaku:
                 self.clear_msg()
+                self.send_prize_danmaku_msg(prize_danmaku)
+                self.send_chat_danmaku_msg(chat_danmaku)
+                idle_time = 0
             else:
                 time.sleep(2)
+                idle_time += 2
 
-            if prize_danmaku:
-                room_list = []
-                for raw_msg in prize_danmaku:
-                    with IgnoreError():
-                        valid_room_numbers = [
-                            _ for _ in re.sub("\D", "-", raw_msg).split("-")
-                            if _ and 10 > len(_) > 2
-                        ]
-                        if valid_room_numbers:
-                            self.prize_logging.info("Prize raw msg[%s]" % raw_msg)
-                        room_list.extend(valid_room_numbers)
-                        print("Prize raw msg -> ", raw_msg.replace("\r", "\\r").replace("\n", "\\n"))
-                self.prize_redis_queue.send_msg(list(set(room_list)))
-
-            if chat_danmaku:
-                self.chat_redis_queue.send_msg(chat_danmaku)
-                for raw_message in chat_danmaku:
-                    try:
-                        spilited_msg = [_ for _ in raw_message.split("\n") if _]
-                        if len(spilited_msg) == 2:
-                            spilited_msg = ["", " "*5] + spilited_msg
-                        user, msg = spilited_msg[-1].split(" : ")
-                        honor = "%s" % (spilited_msg[0] + spilited_msg[1])
-                        ul = "%-5s" % spilited_msg[2]
-                        time_str = str(datetime.datetime.now())[:-3]
-                        message = "[%s][%s] %s -> %s" % (ul, honor, user, msg, )
-                        print("[%s]%s" % (time_str, message))
-                        self.chat_logging.info(message)
-                    except Exception as e:
-                        print("Lost raw chat message. E: %s" % e)
+            if idle_time >= 60:
+                idle_time = 0
+                self.send_heart_beat()
 
 
 if __name__ == "__main__":

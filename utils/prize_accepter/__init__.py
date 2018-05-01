@@ -2,6 +2,7 @@
 import re
 import os
 import time
+import datetime
 import logging
 from selenium import webdriver
 from redismq import RedisMessageQueue
@@ -116,4 +117,10 @@ class PrizeAccepter(object):
         while True:
             room_numbers = self.redis_quene.accept_msg()
             for r in room_numbers:
+                try:
+                    r = str(int(r))
+                except Exception as e:
+                    error_msg = "Lost prize message. E: %s\n-----\n%s\n-----" % (e, r)
+                    logging.info(error_msg)
+                    print("[%s]%s" % (str(datetime.datetime.now()[:-3]), error_msg))
                 self.accept_prize(r)
