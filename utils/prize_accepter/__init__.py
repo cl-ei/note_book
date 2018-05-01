@@ -123,4 +123,5 @@ class PrizeAccepter(object):
                     error_msg = "Lost prize message. E: %s\n-----\n%s\n-----" % (e, r)
                     logging.info(error_msg)
                     print("[%s]%s" % (str(datetime.datetime.now()[:-3]), error_msg))
-                self.accept_prize(r)
+                else:
+                    self.accept_prize(r)
