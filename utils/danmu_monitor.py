@@ -6,6 +6,7 @@ import datetime
 from selenium import webdriver
 from redismq import RedisMessageQueue
 from exceptionsproc import IgnoreError
+from prize_accepter import HEART_BEAT_MSG
 
 
 BROWSER_DRIVER_PATH = "chromedriver.exe"
@@ -92,7 +93,7 @@ class DanmakuMonitor(object):
         self.prize_redis_queue.send_msg(list(set(room_list)))
 
     def send_heart_beat(self):
-        heart_beat_danmaku = ["HEART BEAT!"]
+        heart_beat_danmaku = [HEART_BEAT_MSG]
         self.chat_redis_queue.send_msg(heart_beat_danmaku)
         self.prize_redis_queue.send_msg(heart_beat_danmaku)
         print("[%s]Heart beat message sent." % (str(datetime.datetime.now())[:-3]))

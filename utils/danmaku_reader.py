@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import datetime
 from redismq import RedisMessageQueue
+from prize_accepter import HEART_BEAT_MSG
 
 
 BROWSER_DRIVER_PATH = "chromedriver.exe"
@@ -16,6 +17,9 @@ class DanmakuReader(object):
         while True:
             raw_msgs = self.q.accept_msg()
             for raw_message in raw_msgs:
+                if raw_message == HEART_BEAT_MSG:
+                    continue
+
                 time_str = str(datetime.datetime.now())[:-3]
                 try:
                     spilited_msg = [_ for _ in raw_message.split("\n") if _]

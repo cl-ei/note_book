@@ -9,6 +9,7 @@ from redismq import RedisMessageQueue
 from exceptionsproc import IgnoreError
 
 
+HEART_BEAT_MSG = "HEART_BEAT"
 BROWSER_DRIVER_PATH = "./chromedriver.exe"
 LOGIN_URL = "https://passport.bilibili.com/login"
 LIVE_ADDR_PREFIX = "https://live.bilibili.com/"
@@ -117,6 +118,9 @@ class PrizeAccepter(object):
         while True:
             room_numbers = self.redis_quene.accept_msg()
             for r in room_numbers:
+                if r == HEART_BEAT_MSG:
+                    continue
+
                 try:
                     r = str(int(r))
                 except Exception as e:
